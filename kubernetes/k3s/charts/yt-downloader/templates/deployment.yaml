@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yt-downloader-deployment
+  namespace: yt-downloader
+  labels:
+    app.kubernetes.io/name: yt-downloader
+    app.kubernetes.io/instance: yt-downloader
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: yt-downloader
+      app.kubernetes.io/instance: yt-downloader
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: yt-downloader
+        app.kubernetes.io/instance: yt-downloader
+    spec:
+      containers:
+        - name: yt-downloader
+          image: docker.io/marcobaobao/yt-dlp-webui@sha256:5be29ff9b08d8633f47bf1c4084109b8e6a71dfbb41fa974620dbe3324868775
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3033
+              name: app-port
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            runAsGroup: 1000
+            runAsUser: 1001
+          volumeMounts:
+          - name: config-root
+            mountPath: "/config"
+          - name: config-yaml
+            mountPath: "/config/config.yml"
+            subPath: settings
+          - name: downloads
+            mountPath: "/downloads"
+          - name: session
+            mountPath: "/session"
+      volumes:
+        - name: config-root
+          persistentVolumeClaim:
+            claimName: yt-downloader-pvc-config-root
+        - name: config-yaml
+          configMap:
+            name: yt-downloader-cm
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: yt-downloader-pvc-downloads
+        - name: session
+          persistentVolumeClaim:
+            claimName: yt-downloader-pvc-session

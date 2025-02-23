@@ -1,0 +1,33 @@
+# Awesome - works now with this middleware.
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-double-slash
+  namespace: yt-downloader
+spec:
+  replacePathRegex:
+    regex: /{2,}
+    replacement: /
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yt-downloader-ingress
+  namespace: yt-downloader
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/websocket: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-strip-prefix@kubernetescrd,yt-downloader-strip-double-slash@kubernetescrd
+spec:
+  rules:
+  - host: my.hostname
+    http:
+      paths:
+      - path: /yt
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: yt-downloader-svc
+            port:
+              number: 90
+

@@ -1,0 +1,12 @@
+# This Middleware is necessary to strip prefix for a path in an ingress before forwarding to a service.
+# Without it, the whole path is sent to the service.
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-prefix
+  namespace: kube-system # can be anything, but needs ingress.metadata.annotations spec: traefik.ingress.kubernetes.io/router.middlewares: namespace-strip-prefix@kubernetescrd
+spec:
+  stripPrefixRegex:
+    regex:
+    - ^/[^/]+

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: yt-downloader-svc
+  namespace: yt-downloader
+  labels:
+    app.kubernetes.io/name: yt-downloader
+    app.kubernetes.io/instance: yt-downloader
+spec:
+  type: ClusterIP
+  ports:
+    - port: 90
+      targetPort: 3033
+  selector:
+    app.kubernetes.io/name: yt-downloader
+    app.kubernetes.io/instance: yt-downloader

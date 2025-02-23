@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/name: yt-downloader
+    app.kubernetes.io/instance: yt-downloader
+  name: yt-downloader-cm
+  namespace: yt-downloader
+data:
+  settings: |
+    session_file_path: /session
